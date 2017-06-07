@@ -187,4 +187,28 @@ describe('Testing blog database',function(){
     });
   });
 
+  describe('Delete endpoint',function(){
+    it('check if document is deleted',function(){
+      let deleteId;
+      return BlogPost
+      .findOne()
+      .exec()
+      .then(function(_res){
+        console.log(_res);
+        deleteId = _res.id;
+        return chai
+        .request(app)
+        .delete(`/posts/${deleteId}`);
+      })
+      .then(function(deletedItem){
+        deletedItem.should.have.status(204);
+        return BlogPost
+        .findById(deleteId)
+        .exec()
+      })
+      .then(function(notE){
+        should.not.exist(notE);
+      });
+    });
+  });
 });
