@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: jJHMRZ0ijclsfbWlRKL0NDmbMDQtKHjMcSrCOT/i/dFbFGyrdI1PBlO4aOWrOA1vjtodTVeVmklDTlCPe0d9VPrYIqUIVUvzggBjhtuPsGdMtcGsB3AtkT+q9bH5ND3E1zOF+KfLd8NkPh+8quejNBYlmwzl8wSp8TQVSZCYdjhdw5ZQFqFkNolau1bTDv7IcuyGF3w/7BNv7y5i0hHL5PTGaMxY9Xuj2dRw4EAdXQqYsY5qW1FxXdq5S20VLblbfhZzVTcXtgkq9VgpTqVoj6ctpiFmeC4rbfzImbLT3KpQGFpbizrY2PrU9+CMf4OkTn4z6OsnfOzUIFWPoqXjkGDx2pWvdjnfve0KozieOn8z73SmKXUFDyyPjwBT7+4tzHKJukpV//QVAsrQZ+g8KD6IgKqCkuOawDSG9VrNKKQiZKnHfagWVxSdzNI/8VU1hYpm2qbVSaKrFVHvSR0Pm4mLe0UfifkV5cybc7NdCWOgggdqo3vG+d1N47YYtECOe+eooAJWtTCvROaKZ6GCk4bPdAHyntplpRWF/NFWycD+zvyAbVvrMOB850TWNTH9Nx6ifv8H2P+eY0DMFHaY9C/yejWsO9dExfYL1xuGG0ynmu6M6dPo9K0xrMjmlVZ9ZkUr62kehXtQvxukdSX6oDWU0oX60bJLqm1m4kUKnOw=
+  app: mongoose-blog
+  on:
+    repo: thinkful-c11/Patrice-Kyle-Blog-App-Mongoose-Testing
