@@ -58,11 +58,12 @@ describe('Testing blog database',function(){
       .then(function(_res) {
         res = _res;
         res.should.have.status(200);
-        res.body.blogposts.should.have.length.of.at.least(1);
+        //console.log("HEre",res.body);
+        res.body.should.have.length.of.at.least(1);
         return BlogPost.count();
       })
       .then(function(count) {
-        res.body.blogposts.should.have.length.of(count);
+        res.body.should.have.length.of(count);
       });
 
     });
@@ -74,11 +75,11 @@ describe('Testing blog database',function(){
       .get('/posts')
       .then(function(_res){
         _res.should.have.status(200);
-        _res.body.blogposts.should.have.length.of.at.least(1);
+        _res.body.should.have.length.of.at.least(1);
         _res.should.be.json;
-        _res.body.blogposts.should.be.a('array');
+        _res.body.should.be.a('array');
 
-        _res.body.blogposts.forEach(function(post) {
+        _res.body.forEach(function(post) {
           post.should.be.a('object');
           post.should.include.keys(
             'id', 'author', 'title', 'content', 'created'
