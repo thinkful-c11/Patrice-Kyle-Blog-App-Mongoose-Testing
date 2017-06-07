@@ -4,21 +4,23 @@ const faker = require('faker');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const should = chai.should();
+const chaiMoment = require('chai-moment');
 
 const {BlogPost} = require('../models');
 const {TEST_DATABASE_URL} = require('../config');
 const {app,runServer,closeServer} = require('../server');
 
 chai.use(chaiHttp);
-
+chai.use(chaiMoment);
 function generateBlogs(){
+  //console.log(`${generateAdj()||generateVerbs()} ${generateNoun()}`)
   return{
     author:{
       firstName:faker.name.firstName(),
       lastName:faker.name.lastName()
     },
     content:faker.lorem.paragraph(),
-    title: `${faker.random.bs_adjective} ${faker.random.bs_noun}`,
+    title: `${generateAdj()||generateVerbs()} ${generateNoun()}`,
     created: faker.date.recent()
   };
 }
@@ -28,6 +30,17 @@ function seedData(){
     dataArr.push(generateBlogs());
   }
   return BlogPost.insertMany(dataArr);
+}
+
+//GENERATE NOUNS VERBS ADJ
+function generateNoun(){
+  return ['Puppy','Cat','Shiba','Rabbit'][Math.floor(Math.random()*4)];
+}
+function generateAdj(){
+  return ['Cool','Swag','Lazy',false][Math.floor(Math.random()*4)];
+}
+function generateVerbs(){
+  return ['Send','Play with','Love a','Adopt a'][Math.floor(Math.random()*4)];
 }
 function tearDB(){
   console.warn('SOS CLOSING DATABASE SOS!');
@@ -63,7 +76,7 @@ describe('Testing blog database',function(){
         return BlogPost.count();
       })
       .then(function(count) {
-        res.body.should.have.length.of(count);
+        res.body.should.have.lengthOf(count);
       });
 
     });
@@ -85,16 +98,19 @@ describe('Testing blog database',function(){
             'id', 'author', 'title', 'content', 'created'
           );
         });
-        postRes = _res.body.blogposts[0];
+        postRes = _res.body[0];
         return BlogPost.findById(postRes.id);
       })
       .then(function(post) {
-
+        // console.log(post);
+        // console.log('here',postRes);
+        const authorName = postRes.author.split(' ');
         postRes.id.should.equal(post.id);
-        postRes.author.should.equal(post.author);
+        authorName[0].should.equal(post.author.firstName);
+        authorName[1].should.equal(post.author.lastName);
         postRes.title.should.equal(post.title);
         postRes.content.should.equal(post.content);
-        postRes.created.should.equal(post.created);
+        postRes.created.should.be.sameMoment(post.created);
       });
 
     });
