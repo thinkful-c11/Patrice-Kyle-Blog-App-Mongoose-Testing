@@ -150,5 +150,41 @@ describe('Testing blog database',function(){
     });
   });
 
+  describe('PUT endpoint', function() {
+
+    it('update blog post',function() {
+      const updateData = {
+        title:'Sugar Cubes',
+        author:{
+          firstName: 'Sally',
+          lastName: 'Brown'
+        },
+        content: 'They are sweeT!'
+      };
+      return BlogPost
+        .findOne()
+        .exec()
+        .then(function(post) {
+          updateData.id = post.id;
+          updateData.created = post.created;
+          return chai.request(app)
+            .put(`/posts/${post.id}`)
+            .send(updateData);
+        })
+        .then(function(_res) {
+          _res.should.have.status(201);
+          _res.should.be.json;
+          _res.should.be.a('object');
+          const authorName = separateName(_res.body.author);
+          _res.body.title.should.equal(updateData.title);
+          _res.body.id.should.equal(updateData.id);
+          authorName[0].should.equal(updateData.author.firstName);
+          authorName[1].should.equal(updateData.author.lastName);
+          _res.body.content.should.equal(updateData.content);
+          _res.body.created.should.be.sameMoment(updateData.created);
+        });
+
+    });
+  });
 
 });
