@@ -31,7 +31,9 @@ function seedData(){
   }
   return BlogPost.insertMany(dataArr);
 }
-
+function separateName(str){
+  return str.split(' ');
+}
 //GENERATE NOUNS VERBS ADJ
 function generateNoun(){
   return ['Puppy','Cat','Shiba','Rabbit'][Math.floor(Math.random()*4)];
@@ -103,8 +105,8 @@ describe('Testing blog database',function(){
       })
       .then(function(post) {
         // console.log(post);
-        // console.log('here',postRes);
-        const authorName = postRes.author.split(' ');
+        //  console.log('here',postRes);
+        const authorName = separateName(postRes.author);
         postRes.id.should.equal(post.id);
         authorName[0].should.equal(post.author.firstName);
         authorName[1].should.equal(post.author.lastName);
@@ -112,11 +114,41 @@ describe('Testing blog database',function(){
         postRes.content.should.equal(post.content);
         postRes.created.should.be.sameMoment(post.created);
       });
-
     });
-
   });
 
+  describe('Post endpoint',function(){
+    it('return a new blog post',function(){
+      let newPost = generateBlogs();
+      return chai
+      .request(app)
+      .post('/posts')
+      .send(newPost)
+      .then(function(_res){
+        _res.should.have.status(201);
+        _res.should.be.json;
+        _res.body.should.be.a('object');
+        _res.body.should.include.keys('id','title','content','author','created');
+        _res.body.id.should.not.be.null;
+        _res.body.title.should.not.be.undefined;
+        _res.body.author.should.not.be.undefined;
+        _res.body.content.should.not.be.undefined;
+        newPost = _res.body;
+        return BlogPost.findById(_res.body.id);
+      })
+      .then(function(newPostResult){
+        //console.log(newPost);
+        //console.log('gblalfakslk',newPostResult);
+        const authorName = separateName(newPost.author);
+        newPost.id.should.be.equal(newPostResult.id);
+        authorName[0].should.equal(newPostResult.author.firstName);
+        authorName[1].should.equal(newPostResult.author.lastName);
+        newPost.title.should.equal(newPostResult.title);
+        newPost.content.should.equal(newPostResult.content);
+        newPost.created.should.be.sameMoment(newPostResult.created);
+      });
+    });
+  });
 
 
 });
