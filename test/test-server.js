@@ -18,7 +18,7 @@ function generateBlogs(){
       lastName:faker.name.lastName()
     },
     content:faker.lorem.paragraph(),
-    title: `${faker.random.bs_adjective()} ${faker.random.bs_noun}`,
+    title: `${faker.random.bs_adjective} ${faker.random.bs_noun}`,
     created: faker.date.recent()
   };
 }
@@ -36,7 +36,7 @@ function tearDB(){
 
 describe('Testing blog database',function(){
   before(function(){
-    return runServer();
+    return runServer(TEST_DATABASE_URL);
   });
   beforeEach(function(){
     return seedData();
@@ -48,5 +48,58 @@ describe('Testing blog database',function(){
     return closeServer();
   });
 
-  
+  describe('GET endpoint', function() {
+
+    it('return all exisitng blogpost', function(){
+
+      let res;
+      return chai.request(app)
+      .get('/posts')
+      .then(function(_res) {
+        res = _res;
+        res.should.have.status(200);
+        res.body.blogposts.should.have.length.of.at.least(1);
+        return BlogPost.count();
+      })
+      .then(function(count) {
+        res.body.blogposts.should.have.length.of(count);
+      });
+
+    });
+
+    it('return correct key and values', function(){
+
+      let postRes;
+      return chai.request(app)
+      .get('/posts')
+      .then(function(_res){
+        _res.should.have.status(200);
+        _res.body.blogposts.should.have.length.of.at.least(1);
+        _res.should.be.json;
+        _res.body.blogposts.should.be.a('array');
+
+        _res.body.blogposts.forEach(function(post) {
+          post.should.be.a('object');
+          post.should.include.keys(
+            'id', 'author', 'title', 'content', 'created'
+          );
+        });
+        postRes = _res.body.blogposts[0];
+        return BlogPost.findById(postRes.id);
+      })
+      .then(function(post) {
+
+        postRes.id.should.equal(post.id);
+        postRes.author.should.equal(post.author);
+        postRes.title.should.equal(post.title);
+        postRes.content.should.equal(post.content);
+        postRes.created.should.equal(post.created);
+      });
+
+    });
+
+  });
+
+
+
 });
