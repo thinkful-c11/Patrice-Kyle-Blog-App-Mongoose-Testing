@@ -29,3 +29,24 @@ function seedData(){
   }
   return BlogPost.insertMany(dataArr);
 }
+function tearDB(){
+  console.warn('SOS CLOSING DATABASE SOS!');
+  return mongoose.connection.dropDatabase();
+}
+
+describe('Testing blog database',function(){
+  before(function(){
+    return runServer();
+  });
+  beforeEach(function(){
+    return seedData();
+  });
+  afterEach(function(){
+    return tearDB();
+  });
+  after(function(){
+    return closeServer();
+  });
+
+  
+});
